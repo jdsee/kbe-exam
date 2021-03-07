@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: kbe-gateway
+  config:
+    import: optional:configserver:http://localhost:8888/
+management:
+  endpoints:
+    web:
+      base-path: /manage
+      exposure:
+        include: "*"

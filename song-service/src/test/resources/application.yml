@@ -1,0 +1,10 @@
+eureka:
+  client:
+    enabled: false
+server:
+  servlet:
+    context-path: /rest
+spring:
+  jackson:
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: true
