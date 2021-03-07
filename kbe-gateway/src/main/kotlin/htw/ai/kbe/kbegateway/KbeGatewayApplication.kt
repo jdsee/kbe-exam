@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Bean
 @SpringBootApplication
 @EnableEurekaClient
 class KbeGatewayApplication {
-    fun main(args: Array<String>) {
-        runApplication<KbeGatewayApplication>(*args)
-    }
-
     @Bean
     fun gateway(builder: RouteLocatorBuilder): RouteLocator = builder.routes()
         .route("test") { r -> r.path("/test").uri("http://test.com") }
         .build()
+}
+
+fun main(args: Array<String>) {
+    runApplication<KbeGatewayApplication>(*args)
 }
 
 
