@@ -21,6 +21,8 @@ repositories {
 extra["springCloudVersion"] = "2020.0.2-SNAPSHOT"
 
 dependencies {
+    val jjwtVersion = "0.11.2"
+
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -35,9 +37,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("org.apache.commons:commons-lang3:3.11")
-    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
-    implementation("io.jsonwebtoken:>jjwt-:0.11.2")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
