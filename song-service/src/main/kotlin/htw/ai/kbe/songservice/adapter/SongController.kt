@@ -20,31 +20,36 @@ import javax.validation.constraints.NotBlank
 @RestController
 @RequestMapping(SONGS_PATH)
 class SongController(
-        private val songService: SongService
+    private val songService: SongService
 ) {
     private val objectMapper = jacksonObjectMapper()
     private val validator = Validation.buildDefaultValidatorFactory().validator
 
-    @GetMapping(produces = [
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_XML_VALUE])
+    @GetMapping(
+        produces = [
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_XML_VALUE]
+    )
     fun getAllSongs() = songService.getAllSongs()
 
-    @GetMapping(path = ["/{id}"],
-            produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
+    @GetMapping(
+        path = ["/{id}"],
+        produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
+    )
     fun getSong(@PathVariable id: Long) = songService.getSong(id)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createSong(@RequestBody @Valid song: SongRequest
+    fun createSong(
+        @RequestBody @Valid song: SongRequest
     ): ResponseEntity<*> {
-        println("Song: $song")
         val id = songService.createSong(song.toEntity()).id
         return buildCreatedResponse(id)
     }
 
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun createSongByFile(@RequestParam("file") jsonSong: MultipartFile
+    fun createSongByFile(
+        @RequestParam("file") jsonSong: MultipartFile
     ): ResponseEntity<*> {
         val song: SongRequest = objectMapper.readValue(jsonSong.bytes)
         if (validator.validate(song).isNotEmpty()) {
@@ -53,19 +58,20 @@ class SongController(
         return createSong(song)
     }
 
-
     private fun buildCreatedResponse(id: Long?): ResponseEntity<Void> =
-            ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(id).toUri()).build()
+        ResponseEntity.created(
+            ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id).toUri()
+        ).build()
 }
 
 data class SongRequest(
-        @get:NotBlank(message = "Title must not be empty.")
-        var title: String,
-        var artist: String? = null,
-        var album: String? = null,
-        var released: Int? = null
+    @get:NotBlank(message = "Title must not be empty.")
+    var title: String,
+    var artist: String? = null,
+    var album: String? = null,
+    var released: Int? = null
 ) {
     fun toEntity() = Song(title, artist, album, released)
 }

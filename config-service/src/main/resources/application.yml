@@ -6,7 +6,7 @@ spring:
           uri: https://github.com/jduesentrieb/kbe-config
           default-label: main
           username: s0566845@htw-berlin.de
-          password: v7eGA#Y^Bz2MyCH#S#kS
+          password: ca19c6d2f7aacccd6213b7ab48a9bdd3e03b41cf
           search-paths: config
 server:
   port: 8888
