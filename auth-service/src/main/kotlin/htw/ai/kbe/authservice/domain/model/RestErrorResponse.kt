@@ -1,4 +1,4 @@
-package htw.ai.kbe.authservice.model
+package htw.ai.kbe.authservice.domain.model
 
 import org.springframework.http.HttpStatus
 
@@ -12,6 +12,10 @@ data class RestErrorResponse(
 ) {
     companion object {
         fun of(status: HttpStatus, detailMessage: String): RestErrorResponse =
-            RestErrorResponse(status.value(), status.reasonPhrase, detailMessage)
+            RestErrorResponse(
+                status.value(),
+                status.reasonPhrase,
+                detailMessage
+            )
     }
 }

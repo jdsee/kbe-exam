@@ -1,1 +1,11 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import: optional:configserver:http://localhost:8888/
+
+auth:
+  jwt:
+    key:
+      private: ${KBE_JWT_PRIVATE_KEY}
 

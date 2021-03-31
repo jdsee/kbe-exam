@@ -1,6 +1,7 @@
 package htw.ai.kbe.authservice.security
 
-import htw.ai.kbe.authservice.model.UserCredentials
+import htw.ai.kbe.authservice.domain.model.UserCredentials
+import htw.ai.kbe.authservice.domain.model.UserCredentialsRepository
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService

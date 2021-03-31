@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import javax.ws.rs.HttpMethod.POST
 
 
@@ -17,27 +20,31 @@ const val AUTH_PATH = "/auth"
 @Configuration
 class SecurityConfig(
     private val userDetailsService: JwtUserDetailsService,
-    private val jwtAuthenticationSuccessHandler: JwtAuthenticationSuccessHandler,
-    private val jwtAuthenticationFailureHandler: JwtAuthenticationFailureHandler,
-    private val passwordEncoder: PasswordEncoder
+    private val jwtService: JwtService
 ) : WebSecurityConfigurerAdapter() {
 
-    @Value("#{server.servlet.context-path")
+    @Value("\${server.servlet.context-path}")
     private lateinit var contextPath: String
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
     @Bean
-    fun jwtAuthenticationSuccessHandler(jwtService: JwtService) = JwtAuthenticationSuccessHandler(jwtService)
+    fun jwtAuthenticationSuccessHandler() = JwtAuthenticationSuccessHandler(jwtService)
 
     @Bean
     fun jwtAuthenticationFailureHandler() = JwtAuthenticationFailureHandler()
 
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource? {
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", CorsConfiguration().applyPermitDefaultValues())
+        return source
+    }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder)
+            .passwordEncoder(passwordEncoder())
     }
 
     override fun configure(http: HttpSecurity) {
@@ -46,18 +53,15 @@ class SecurityConfig(
             .csrf().disable()
             .authorizeRequests()
             .antMatchers(POST, contextPath + AUTH_PATH).permitAll()
-            .anyRequest().authenticated()
-            .and()
+            .anyRequest().authenticated().and()
             .addFilter(jwtAuthenticationFilter())
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .exceptionHandling()
     }
 
     fun jwtAuthenticationFilter(): JwtAuthenticationFilter {
-        val jwtAuthenticationFilter = JwtAuthenticationFilter()
-        jwtAuthenticationFilter.setAuthenticationSuccessHandler(jwtAuthenticationSuccessHandler)
-        jwtAuthenticationFilter.setAuthenticationFailureHandler(jwtAuthenticationFailureHandler)
+        val jwtAuthenticationFilter = JwtAuthenticationFilter(authenticationManager())
+        jwtAuthenticationFilter.setAuthenticationSuccessHandler(jwtAuthenticationSuccessHandler())
+        jwtAuthenticationFilter.setAuthenticationFailureHandler(jwtAuthenticationFailureHandler())
         jwtAuthenticationFilter.setFilterProcessesUrl(AUTH_PATH)
         return jwtAuthenticationFilter
     }

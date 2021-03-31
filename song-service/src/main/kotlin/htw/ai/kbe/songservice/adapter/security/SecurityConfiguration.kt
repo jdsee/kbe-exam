@@ -1,7 +1,6 @@
 package htw.ai.kbe.songservice.adapter.security
 
-import org.springframework.http.HttpMethod
-import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -10,7 +9,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @author Joscha Seelig <jduesentrieb> 2021
  **/
 @EnableWebSecurity
-class SecurityConfiguration : WebSecurityConfigurerAdapter() {
+class SecurityConfiguration(
+    @Value("\${auth.jwt.key.public}") private val jwtPublicKey: String
+) : WebSecurityConfigurerAdapter() {
+
     override fun configure(http: HttpSecurity) {
         http.cors()
             .and()
@@ -18,6 +20,8 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
             .authorizeRequests()
             .anyRequest().authenticated()
             .and()
-            .addFilter(JwtAuthorizationFilter(authenticationManager()))
+            .addFilter(JwtAuthorizationFilter(authenticationManager(), jwtPublicKey))
+            .exceptionHandling()
+            .authenticationEntryPoint(JwtAuthenticationEntryPoint())
     }
 }

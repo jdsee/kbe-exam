@@ -1,4 +1,4 @@
-package htw.ai.kbe.songservice.adapter
+package htw.ai.kbe.songservice.adapter.api
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException

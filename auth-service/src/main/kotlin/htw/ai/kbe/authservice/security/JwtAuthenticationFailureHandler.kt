@@ -1,7 +1,7 @@
 package htw.ai.kbe.authservice.security
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import htw.ai.kbe.authservice.model.RestErrorResponse
+import htw.ai.kbe.authservice.domain.model.RestErrorResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.AuthenticationException

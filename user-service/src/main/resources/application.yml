@@ -1,5 +1,5 @@
 spring:
   application:
-    name: song-service
+    name: user-service
   config:
     import: optional:configserver:http://localhost:8888/

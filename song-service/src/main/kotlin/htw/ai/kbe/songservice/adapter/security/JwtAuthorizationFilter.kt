@@ -1,5 +1,6 @@
 package htw.ai.kbe.songservice.adapter.security
 
+import htw.ai.kbe.songservice.adapter.security.SecurityConstants.BEARER_TOKEN_PREFIX
 import io.jsonwebtoken.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -16,14 +17,24 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-const val BEARER = "Bearer"
 
 class JwtAuthorizationFilter(
     authenticationManager: AuthenticationManager,
+    @Value("\${auth.jwt.key.public}") rsaPublicKey: String
 ) : BasicAuthenticationFilter(authenticationManager) {
-    @Value("#{security.jwt.key.public}")
-    private lateinit var rsaPublicKey: String
-    private lateinit var publicKey: PublicKey
+    private val publicKey: PublicKey
+
+    init {
+        val key = rsaPublicKey
+            .replace("-----BEGIN PUBLIC KEY-----", "")
+            .replace("-----END PUBLIC KEY-----", "")
+            .replace("\n", "")
+            .replace(" ", "")
+        val keySpec = X509EncodedKeySpec(Base64.getDecoder().decode(key))
+        publicKey = KeyFactory
+            .getInstance(SignatureAlgorithm.RS256.familyName)
+            .generatePublic(keySpec)
+    }
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -31,7 +42,7 @@ class JwtAuthorizationFilter(
         filterChain: FilterChain
     ) {
         val header = request.getHeader(HttpHeaders.AUTHORIZATION)
-        if (header == null || header.startsWith(BEARER).not()) {
+        if (header == null || header.startsWith(BEARER_TOKEN_PREFIX).not()) {
             filterChain.doFilter(request, response)
             return
         }
@@ -56,17 +67,7 @@ class JwtAuthorizationFilter(
         } // TODO: extract to global exception handling in gateway
 
     private fun parseToken(token: String) = Jwts.parserBuilder()
-        .setSigningKey(getPublicKey()).build()
-        .parseClaimsJws(token.removePrefix(BEARER).trim())
+        .setSigningKey(publicKey).build()
+        .parseClaimsJws(token.removePrefix(BEARER_TOKEN_PREFIX).trim())
         .body.subject
-
-    private fun getPublicKey(): PublicKey {
-        if (this::publicKey.isInitialized.not()) {
-            val keySpec = X509EncodedKeySpec(Base64.getDecoder().decode(rsaPublicKey))
-            publicKey = KeyFactory
-                .getInstance(SignatureAlgorithm.RS256.familyName)
-                .generatePublic(keySpec)
-        }
-        return publicKey
-    }
 }

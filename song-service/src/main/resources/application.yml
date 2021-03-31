@@ -9,3 +9,7 @@ management:
       base-path: /manage
       exposure:
         include: "*"
+auth:
+  jwt:
+    key:
+      public: ${KBE_JWT_PUBLIC_KEY}

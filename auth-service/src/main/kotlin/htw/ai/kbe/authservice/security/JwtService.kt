@@ -13,18 +13,21 @@ import java.util.*
 
 @Service
 class JwtService(
-    @Value("#auth.jwt.expiry:15") tokenExpiryDuration: Long,
-    @Value("#auth.jwt.key.private") rsaPrivateKey: String
+    @Value("\${auth.jwt.expiry:15}") tokenExpiryDuration: Long,
+    @Value("\${auth.jwt.key.private}") rsaPrivateKey: String
 ) {
     private val tokenExpiryDuration = Duration.ofMinutes(tokenExpiryDuration)
     private val privateKey: PrivateKey
 
     init {
-        rsaPrivateKey.removePrefix("-----BEGIN RSA PRIVATE KEY-----")
-        rsaPrivateKey.removeSuffix("-----END RSA PRIVATE KEY-----")
-        val keySpec = PKCS8EncodedKeySpec(Base64.getDecoder().decode(rsaPrivateKey))
+        val key = rsaPrivateKey
+            .replace("-----BEGIN PRIVATE KEY-----", "")
+            .replace("-----END PRIVATE KEY-----", "")
+            .replace("\n", "")
+            .replace(" ", "")
+        val keySpec = PKCS8EncodedKeySpec(Base64.getDecoder().decode(key))
         privateKey = KeyFactory
-            .getInstance(SignatureAlgorithm.RS256.value)
+            .getInstance(SignatureAlgorithm.RS256.familyName)
             .generatePrivate(keySpec)
     }
 

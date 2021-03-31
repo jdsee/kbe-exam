@@ -1,11 +1,11 @@
-                       package htw.ai.kbe.userservice
+package htw.ai.kbe.mailservice
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class UserServiceApplication
+class MailServiceApplication
 
 fun main(args: Array<String>) {
-	runApplication<UserServiceApplication>(*args)
+	runApplication<MailServiceApplication>(*args)
 }

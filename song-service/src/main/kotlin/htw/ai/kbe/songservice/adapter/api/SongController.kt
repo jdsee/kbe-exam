@@ -1,8 +1,8 @@
-package htw.ai.kbe.songservice.adapter
+package htw.ai.kbe.songservice.adapter.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import htw.ai.kbe.songservice.ApiEndpointConstants.SONGS_PATH
+import htw.ai.kbe.songservice.adapter.api.ApiEndpointConstants.SONGS_PATH
 import htw.ai.kbe.songservice.domain.model.Song
 import htw.ai.kbe.songservice.domain.ports.SongService
 import org.springframework.http.HttpStatus

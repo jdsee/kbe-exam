@@ -1,6 +1,5 @@
-package htw.ai.kbe.authservice.security
+package htw.ai.kbe.authservice.domain.model
 
-import htw.ai.kbe.authservice.model.UserCredentials
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 

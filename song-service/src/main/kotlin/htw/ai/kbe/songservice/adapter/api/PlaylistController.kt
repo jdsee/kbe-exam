@@ -1,5 +1,6 @@
-package htw.ai.kbe.songservice.adapter
+package htw.ai.kbe.songservice.adapter.api
 
+import htw.ai.kbe.songservice.adapter.api.ApiEndpointConstants.PLAYLISTS_PATH
 import htw.ai.kbe.songservice.domain.model.Playlist
 import htw.ai.kbe.songservice.domain.ports.SongService
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +17,7 @@ import javax.validation.constraints.Positive
 @author Joscha Seelig <jduesentrieb> 2021
  **/
 @RestController
-@RequestMapping("/songLists")
+@RequestMapping(PLAYLISTS_PATH)
 class PlaylistController
 @Autowired constructor(
     private val songService: SongService

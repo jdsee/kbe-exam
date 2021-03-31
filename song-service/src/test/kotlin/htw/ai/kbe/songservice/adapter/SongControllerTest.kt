@@ -1,8 +1,7 @@
 package htw.ai.kbe.songservice.adapter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import htw.ai.kbe.songservice.ApiEndpointConstants
-import htw.ai.kbe.songservice.ApiEndpointConstants.SONGS_PATH
+import htw.ai.kbe.songservice.adapter.ApiEndpointConstants.SONGS_PATH
 import htw.ai.kbe.songservice.domain.model.Song
 import htw.ai.kbe.songservice.domain.model.SongRepository
 import htw.ai.kbe.songservice.testutils.parameterized.FileSource
