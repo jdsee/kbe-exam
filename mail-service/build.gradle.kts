@@ -18,6 +18,8 @@ repositories {
 extra["springCloudVersion"] = "2020.0.2"
 
 dependencies {
+	val jjwtVersion = "0.11.2"
+
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -26,6 +28,12 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+	implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+	implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+	implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }
