@@ -19,7 +19,7 @@ data class Playlist(
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var ownerId: String? = null,
     @ManyToMany(cascade = [CascadeType.MERGE])
-    var songs: @NotEmpty MutableList<Song> = mutableListOf(),
+    var songs: @NotEmpty List<Song> = listOf(),
     var name: @NotBlank String,
     @JsonProperty("isPrivate")
     var personal: Boolean = false
