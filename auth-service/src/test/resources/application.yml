@@ -1,0 +1,41 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8888/
+server:
+  servlet:
+    context-path: /rest
+eureka:
+  client:
+    enabled: false
+auth:
+  jwt:
+    key:
+      private: -----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC64iztSHVJUijV
+        mwGnZjAW+gxrKaFcSma8fTt6AHYRgxHN9fuXWgZQvRQAohCH7XjGHsglsdafTZAF
+        hLge3OageFqcDpCwUZuz6/Q2X8WGXFnNYa0Oxko2B9c0BClMiiK5aqDatRgOvA6R
+        PVZKsq7emoJEOQh8bjsz41WDxvjWIhCJoRow43+HuUnxXSJf/27HD3u/ZuFKc8/x
+        99B+f/SmJ1mdf2snw/Kg/9W1u6IM8wNU0J4faV8M8E9+AxcGLi5TJ5KuuM2pdsyB
+        k5GiJdpL4909cEvOsvtZ18mveiuxXqvGWIXJEvC/qEWPa6vv7H46dKWwwiHjh+9P
+        L/psPbmhAgMBAAECggEAUUIm5sWqucbPmpFblr4ICvWOkMn5L3fqU+rgAZxRuiuT
+        gkqCqryqIlEUcXIGXhQTf5HC1SEOgRXomX2r0T+byAqM224523Cgkwr1lO7vpAxj
+        v7nI1bPCcNvX5vYoPu+RSa3jYzV60G1UqDJTYwduobvtCF0EI5aKh3VBqZrKd9B5
+        rL3lTaIK+Xt9qUIlvHh4eqoqwTr+xmIWqR0BeG0jDOFFkfgBvmTiZXed5umhOSAW
+        awkQkUAS9sgjZWjdwXAJNzOluJeNyrrFvoztC5gxJH16DvGyuRhIZTYy9ws6pXBs
+        xI5Dkjcb+NN53qwMA0PgpkR+ldYoe9ib9Sw+hjQcAQKBgQDibvzexIaWcriKOPgB
+        CHstUwVbHUJb0uiigxVZim6k1/AoGBxYbhenlFIxpzycvUoe6o7zZp9/OQDavglW
+        ty7e0yGTU9x0AvCgWoUnOetvVujp/IlYqrHQTYHTeVcuH008Ha37GUfmGFYxJvCh
+        YIhxoh7qSB2Hkzf71G49U+Z3GQKBgQDTSSUl5wzp/BPyIVOaYgaVOahWAIcgZ95J
+        EwCOC/DeBIKieJ2vfM/KKnxzoS+/SQkzqMmvFchBXYm9pdk81pA/euCCVdq2Mryl
+        Pb4/o9VBKJhbo/oNWRbcA5SPCAM1eq7Poc+yf4thnda6HtU2sb7bfR82EcgfHGmc
+        P+THIoXPyQKBgFRjuvinU+W0YdSaAMwZxhaRT3iywe2JAEy4//b8Idpr5ER9H+tR
+        NJ2vKKb6xhtAbORy1M4gHCeFLi1YEBDyepRvKZ9H7OyLv/RzaBbDflxjjrDN/r49
+        98FDcbRID9bPsbBK+3GO7X3y6gStl5b9bDy1iEIWmHLTylSfymou38DZAoGBALd0
+        I1UtsQDZZ1gtp7G8u4qGbat++dUhWtiIL0snAxVDRUpdAE2HScR372dW5WZpvBum
+        yrfDagWXeim4/07b3pO/1YBVm3nnw/SWD8KiNmBFJ0Uqs8szN64BTdSDWIXu6CpQ
+        jU6ngBZaPj+M1gSPgPCDS75e4ixhNzH8KGDfkOBBAoGBAITAIsEJCcOGGPOX9M/h
+        O6VoUDIesyS/1h9l40WLLJJV3ijrxM+5haUKK09T9ASKiPw29u95B2pVehbo16aM
+        YWXuYHtionI8v9FFm1aOpDkhzEjwnYQtf20aZZo0kkdTdFHRr0NUi4qe2cVLFbVp
+        pQleYg2ExwQczEpLRpABot5l
+        -----END PRIVATE KEY-----
+

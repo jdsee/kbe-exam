@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement
 data class Playlist(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    var id: Int? = null,
+    var id: Long? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var ownerId: String? = null,
     @ManyToMany(cascade = [CascadeType.MERGE])

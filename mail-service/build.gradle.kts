@@ -30,7 +30,6 @@ dependencies {
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
-
 	implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
 	implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
 	implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")

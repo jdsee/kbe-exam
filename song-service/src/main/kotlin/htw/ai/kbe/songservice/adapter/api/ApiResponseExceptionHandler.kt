@@ -129,8 +129,8 @@ class ApiResponseExceptionHandler : ResponseEntityExceptionHandler() {
      * Handle javax.persistence.EntityNotFoundException
      */
     @ExceptionHandler(EntityNotFoundException::class)
-    protected fun handleEntityNotFound(ex: EntityNotFoundException?): ResponseEntity<Any> {
-        return ResponseEntity(ex?.message, HttpStatus.NOT_FOUND)
+    protected fun handleEntityNotFound(ex: EntityNotFoundException): ResponseEntity<String?> {
+        return ResponseEntity(ex.message, HttpStatus.NOT_FOUND)
     }
 
     /**

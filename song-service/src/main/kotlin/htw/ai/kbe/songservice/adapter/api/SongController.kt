@@ -58,6 +58,19 @@ class SongController(
         return createSong(song)
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteSong(
+        @PathVariable("id") id: Long
+    ) = songService.deleteSong(id)
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateSong(
+        @PathVariable("id") id: Long,
+        @RequestBody @Valid song: Song
+    ) = songService.updateSong(id, song)
+
     private fun buildCreatedResponse(id: Long?): ResponseEntity<Void> =
         ResponseEntity.created(
             ServletUriComponentsBuilder.fromCurrentRequest()

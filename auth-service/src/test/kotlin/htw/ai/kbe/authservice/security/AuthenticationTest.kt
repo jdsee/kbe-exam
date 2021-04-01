@@ -1,143 +1,101 @@
 package htw.ai.kbe.authservice.security
 
-import com.google.common.base.Charsets
-import htwb.ai.jolu.adapter.security.config.SecurityConfiguration.AUTH_PATH
-import htwb.ai.jolu.domain.model.UserAccount
-import htwb.ai.jolu.domain.repository.UserAccountRepository
-import htwb.ai.jolu.testutil.TransactionalIntegrationTest
-import lombok.RequiredArgsConstructor
-import org.apache.http.HttpHeaders
-import org.assertj.core.api.Assertions
+import htw.ai.kbe.authservice.domain.model.UserCredentials
+import htw.ai.kbe.authservice.domain.model.UserCredentialsRepository
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.MvcResult
-import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.post
 
 /**
  * @author jslg
  */
-@TransactionalIntegrationTest
-@RequiredArgsConstructor(onConstructor = __(Autowired))
-class AuthenticationTest {
-    private val mvc: MockMvc? = null
-    private val userRepository: UserAccountRepository? = null
-    private val passwordEncoder: PasswordEncoder? = null
-
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureDataMongo
+@AutoConfigureMockMvc
+internal class AuthenticationTest
+@Autowired constructor(
+    private val mvc: MockMvc,
+    private val userRepository: UserCredentialsRepository,
+    private val passwordEncoder: PasswordEncoder
+) {
     @BeforeEach
-    fun setUp() {
+    internal fun setUp() {
         userRepository.save(
-            UserAccount.builder()
-                .userId(USER_ID)
-                .password(passwordEncoder!!.encode(USER_PASSWORD)).build()
-        )
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun shouldGetForbiddenOnSecuredEndpointWithoutAuth() {
-        mvc!!.perform(MockMvcRequestBuilders.get(SONGS_PATH))
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
-            .andExpect(
-                MockMvcResultMatchers.header()
-                    .exists(HttpHeaders.WWW_AUTHENTICATE)
+            UserCredentials(
+                username = USER_ID,
+                password = passwordEncoder.encode(USER_PASSWORD)
             )
-            .andReturn()
+        )
+    }
+
+    private fun doAuthenticationRequest(
+        username: String,
+        password: String
+    ) = mvc.post(AUTH_PATH) {
+        contentType = MediaType.APPLICATION_JSON
+        content = """{"username":"$username","password":"$password"}"""
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldBeAbleToLoginWithRegisteredUser() {
-        doAuthenticationRequest(USER_ID, USER_PASSWORD)
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andDo { result: MvcResult ->
-                Assertions.assertThat(
-                    result.response.contentAsString
-                ).startsWith("Bearer")
-            }
+    internal fun shouldBeAbleToLoginWithRegisteredUser() {
+        val response = doAuthenticationRequest(USER_ID, USER_PASSWORD)
+            .andExpect {
+                status { isOk() }
+            }.andReturn().response
+        assertThat(response.contentAsString).startsWith("Bearer")
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldGetUnauthorizedForUnregisteredUser() {
+    internal fun shouldGetUnauthorizedForUnregisteredUser() {
         doAuthenticationRequest(USER_ID, INVALID_PASSWORD)
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
-            .andReturn()
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun shouldBeAbleToAccessSecuredEndpointWithAuth() {
-        val token =
-            doAuthenticationRequest(USER_ID, USER_PASSWORD)
-                .andReturn().response
-                .getContentAsString(Charsets.UTF_8).replace("\\n".toRegex(), "")
-        mvc!!.perform(
-            MockMvcRequestBuilders.get(SONGS_PATH)
-                .header(HttpHeaders.AUTHORIZATION, token)
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andDo { result: MvcResult ->
-                Assertions.assertThat(
-                    result.response.contentAsString
-                ).isNotEmpty()
+            .andExpect {
+                status { isUnauthorized() }
             }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldReturnDifferentTokensForDifferentUsers() {
+    internal fun shouldReturnDifferentTokensForDifferentUsers() {
         userRepository.save(
-            UserAccount.builder()
-                .userId(OTHER_USER_ID)
-                .password(passwordEncoder!!.encode(USER_PASSWORD)).build()
+            UserCredentials(
+                username = OTHER_USER_ID,
+                password = passwordEncoder.encode(USER_PASSWORD)
+            )
         )
+
         val token1 =
             doAuthenticationRequest(USER_ID, USER_PASSWORD)
                 .andReturn().response.contentAsString
-        val token2 = doAuthenticationRequest(
-            OTHER_USER_ID,
-            USER_PASSWORD
-        )
+        val token2 = doAuthenticationRequest(OTHER_USER_ID, USER_PASSWORD)
             .andReturn().response.contentAsString
-        Assertions.assertThat(token1).startsWith("Bearer")
-        Assertions.assertThat(token2).startsWith("Bearer")
-        Assertions.assertThat(token1).isNotEqualTo(token2)
+
+        assertThat(token1).startsWith("Bearer")
+        assertThat(token2).startsWith("Bearer")
+        assertThat(token1).isNotEqualTo(token2)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldReturnUnauthorizedAndEmptyBodyForUnauthorizedUser() {
-        doAuthenticationRequest(USER_ID, INVALID_PASSWORD)
-            .andDo { result: MvcResult ->
-                Assertions.assertThat(result.response.status)
-                    .isEqualTo(HttpStatus.UNAUTHORIZED.value())
-                Assertions.assertThat(result.response.contentAsString).isNullOrEmpty()
-            }
-    }
+    internal fun shouldReturnUnauthorizedAndEmptyBodyForUnauthorizedUser() {
+        val response = doAuthenticationRequest(USER_ID, INVALID_PASSWORD)
+            .andExpect {
+                status { isUnauthorized() }
+            }.andReturn().response
 
-    @Throws(Exception::class)
-    private fun doAuthenticationRequest(
-        userId: String,
-        password: String
-    ): ResultActions {
-        return mvc!!.perform(
-            post(AUTH_PATH)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"userId\":\"$userId\",\"password\":\"$password\"}")
-        )
+        assertThat(response.status).isEqualTo(HttpStatus.UNAUTHORIZED.value())
+        assertThat(response.contentAsString).contains("Bad credentials")
     }
 
     companion object {
-        private const val SONGS_PATH = "/songs"
-        const val USER_ID = "mmuster"
-        const val USER_PASSWORD = "pass1234"
+        const val USER_ID = "tester"
+        const val USER_PASSWORD = "test123"
         private const val OTHER_USER_ID = "other"
         private const val INVALID_PASSWORD = "wrong"
     }

@@ -1,18 +1,23 @@
-package htw.ai.kbe.songservice.adapter.api
+package htw.ai.kbe.songservice.domain.ports
 
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 
 /**
 @author Joscha Seelig <jduesentrieb> 2021
  **/
 @FeignClient("mail-service")
-@RequestMapping("/mail")
+@RequestMapping("/rest/mail")
 interface SimpleMailSenderClient {
     @PostMapping
-    fun sendMail(@RequestBody request: SimpleMailRequest);
+    fun sendMail(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) jwtToken: String,
+        @RequestBody request: SimpleMailRequest
+    )
 }
 
 data class SimpleMailRequest(

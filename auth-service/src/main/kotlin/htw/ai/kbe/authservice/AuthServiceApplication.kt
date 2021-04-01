@@ -12,8 +12,12 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class AuthServiceApplication {
     @Bean
     fun demoData(repo: UserCredentialsRepository, passwordEncoder: PasswordEncoder) = CommandLineRunner {
-        repo.save(
-            UserCredentials("mmuster", passwordEncoder.encode("pw1234"))
+        repo.saveAll(
+            listOf(
+                UserCredentials("mmuster", passwordEncoder.encode("pw1234")),
+                UserCredentials("user1", passwordEncoder.encode("user1")),
+                UserCredentials("user2", passwordEncoder.encode("user2"))
+            )
         )
     }
 }

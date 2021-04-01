@@ -4,10 +4,12 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/auth-service" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />
-        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="gradleJvm" value="openjdk-15" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/auth-service" />
@@ -15,6 +17,8 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/config-service" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />
@@ -26,6 +30,8 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/eureka-service" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />
@@ -37,6 +43,8 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/kbe-gateway" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />
@@ -48,6 +56,8 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/mail-service" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />
@@ -59,6 +69,8 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/song-service" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />
@@ -70,6 +82,8 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/user-service" />
         <option name="gradleHome" value="/usr/local/Cellar/gradle/5.4/libexec" />

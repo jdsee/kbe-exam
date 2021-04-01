@@ -1,6 +1,7 @@
-package htw.ai.kbe.songservice.adapter
+package htw.ai.kbe.songservice.adapter.api
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import htw.ai.kbe.songservice.TestDataProvider
 import htw.ai.kbe.songservice.adapter.api.ApiEndpointConstants.SONGS_PATH
 import htw.ai.kbe.songservice.domain.model.Song
 import htw.ai.kbe.songservice.domain.model.SongRepository
@@ -14,13 +15,12 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.multipart
-import org.springframework.test.web.servlet.post
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.web.servlet.*
 import org.springframework.transaction.annotation.Transactional
 
 
@@ -33,16 +33,18 @@ private const val SONG_MULTIPART_FILE_NAME = "file"
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class SongControllerTest
+@WithMockUser
+internal class SongControllerTest
 @Autowired constructor(
     private val mvc: MockMvc,
-    val songRepository: SongRepository,
+    private val songRepository: SongRepository,
+    private val testDataProvider: TestDataProvider
 ) {
     private val objectMapper = jacksonObjectMapper()
 
     @ParameterizedTest
     @CsvSource(value = ["application/json,json", "application/xml,xml", "*/*,json"])
-    fun `GET should support json and xml responses`(
+    internal fun `GET should support json and xml responses`(
         acceptHeader: String, expectedContentType: String
     ) {
         mvc.get(SONGS_PATH) {
@@ -57,8 +59,8 @@ class SongControllerTest
     }
 
     @Test
-    fun `GET should return song when Song-ID is known`() {
-        val song: Song = createTestSong()
+    internal fun `GET should return song when Song-ID is known`() {
+        val song: Song = testDataProvider.createTestSong()
         mvc.get("$SONGS_PATH/${song.id}") {
             accept = MediaType.APPLICATION_JSON
         }.andExpect {
@@ -71,7 +73,7 @@ class SongControllerTest
     }
 
     @Test
-    fun `GET should return BAD REQUEST when Song-ID is not known`() {
+    internal fun `GET should return BAD REQUEST when Song-ID is not known`() {
         mvc.get("$SONGS_PATH/3000") {
             accept = MediaType.APPLICATION_JSON
         }.andExpect {
@@ -82,14 +84,14 @@ class SongControllerTest
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "{\"title\":\"title\",\"artist\":null,\"album\":null,\"released\":0}",
-            "{\"title\":\"title\",\"artist\":null,\"album\":\"album\",\"released\":0}",
-            "{\"title\":\"title\",\"artist\":null,\"album\":null,\"released\":100}",
-            "{\"title\":\"title\",\"artist\":\"jolu\",\"album\":null,\"released\":0}",
-            "{\"title\":\"title\",\"artist\":\"jolu\",\"album\":\"album\",\"released\":0}"
+            """{"title":"title","artist":null,"album":null,"released":0}""",
+            """{"title":"title","artist":null,"album":"album","released":0}""",
+            """{"title":"title","artist":null,"album":null,"released":100}""",
+            """{"title":"title","artist":"jolu","album":null,"released":0}""",
+            """{"title":"title","artist":"jolu","album":"album","released":0}"""
         ]
     )
-    fun `POST should create valid song and set proper location header`(requestBody: String) {
+    internal fun `POST should create valid song and set proper location header`(requestBody: String) {
         mvc.post(SONGS_PATH) {
             contentType = MediaType.APPLICATION_JSON
             content = requestBody
@@ -110,7 +112,7 @@ class SongControllerTest
             "songs/invalid/songWithId.json"
         ]
     )
-    fun `POST should not create invalid songs`(requestBody: String) {
+    internal fun `POST should not create invalid songs`(requestBody: String) {
         mvc.post(SONGS_PATH) {
             contentType = MediaType.APPLICATION_JSON
             content = requestBody
@@ -121,24 +123,26 @@ class SongControllerTest
 
     @ParameterizedTest
     @FileSource(["songs/valid/song.json"])
-    fun `POST should accept and save valid song from JSON-file`(fileContent: String) {
-        mvc.multipart(SONGS_PATH) {
+    internal fun `POST should accept and save valid song from JSON-file`(fileContent: String) {
+        val response = mvc.multipart(SONGS_PATH) {
             contentType = MediaType.MULTIPART_FORM_DATA
             file(createSongMockMultipartFile(fileContent))
         }.andExpect {
             status { isCreated() }
-            assertThat(songRepository.findAll()[0])
-                .usingRecursiveComparison()
-                .ignoringExpectedNullFields()
-                .isEqualTo(
-                    Song(
-                        title = "We Built This City",
-                        artist = "Starship",
-                        album = "Grunt/RCA",
-                        released = 1985
-                    )
+            header { exists(HttpHeaders.LOCATION) }
+        }.andReturn().response
+
+        val id = response.getHeader(HttpHeaders.LOCATION)!!.substringAfterLast('/').toLong()
+        assertThat(songRepository.findByIdOrNull(id))
+            .isEqualTo(
+                Song(
+                    id = id,
+                    title = "We Built This City",
+                    artist = "Starship",
+                    album = "Grunt/RCA",
+                    released = 1985
                 )
-        }
+            )
     }
 
     @ParameterizedTest
@@ -150,13 +154,85 @@ class SongControllerTest
             "songs/invalid/songWithId.json"
         ]
     )
-    fun `POST should not accept and save invalid song from JSON-File`(fileContent: String) {
+    internal fun `POST should not accept and save invalid song from JSON-File`(fileContent: String) {
+        val amountOfSongsBefore = songRepository.count()
         mvc.multipart(SONGS_PATH) {
             file(createSongMockMultipartFile(fileContent))
         }.andExpect {
             status { isBadRequest() }
-            assertThat(songRepository.findAll()).isEmpty()
+            assertThat(songRepository.count()).isEqualTo(amountOfSongsBefore)
         }
+    }
+
+    @Test
+    fun `PUT should not update song with invalid ID`() {
+        val id = testDataProvider.createTestSong().id
+        mvc.put("$SONGS_PATH/$id") {
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(createTestSong())
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            """{"id":@id,"title":"title","artist":"jolu","album":"album","released":2020}""",
+            """{"id":@id,"title":"title"}"""]
+    )
+    fun `PUT should update valid song`(reqBody: String) {
+        val id = testDataProvider.createTestSong().id
+        mvc.put("$SONGS_PATH/$id") {
+            contentType = MediaType.APPLICATION_JSON
+            content = reqBody.replace("@id", id.toString())
+        }.andExpect {
+            status { isNoContent() }
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        value = [
+            """{"title":"XXX","artist":"jolu","label":"label","released":2020}#100#true""", // no id
+            """{"id":100,"title":"XXX","artist":"jolu","label":"label","released":2020}#111#true""", // id's not matching
+            """{"id":100,"artist":"jolu","label":"label","released":2020}#100#true""", // no title
+            """{"id":100,"title":"title","artist":"jolu","label":"label","released":2020}#100#false"""], // song not present
+        delimiter = '#'
+    )
+    fun `PUT should not update invalid song`(
+        reqBody: String?,
+        pathId: Int,
+        songPresent: Boolean
+    ) {
+        if (songPresent) {
+            songRepository.save(createTestSong())
+        }
+        mvc.put("$SONGS_PATH/$pathId") {
+            contentType = MediaType.APPLICATION_JSON
+            content = reqBody
+        }.andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    fun `DELETE should return NO CONTENT and delete when id is known`() {
+        val amountOfSongsBefore = songRepository.count()
+        val id = testDataProvider.createTestSong().id
+        mvc.delete("$SONGS_PATH/$id")
+            .andExpect {
+                status { isNoContent() }
+                assertThat(songRepository.count()).isEqualTo(amountOfSongsBefore)
+            }
+    }
+
+    @Test
+    fun `DELETE should return NOT FOUND when id is no known`() {
+        mvc.delete("$SONGS_PATH/123")
+            .andExpect {
+                status { isNotFound() }
+            }
     }
 
     private fun createSongMockMultipartFile(fileContent: String) = MockMultipartFile(

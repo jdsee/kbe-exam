@@ -24,7 +24,7 @@ class PlaylistController
 ) {
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE])
-    fun getAllSongLists(
+    fun getAllPlaylists(
         @RequestParam(name = "ownerId") ownerId: String?,
         principal: Principal
     ): List<Playlist> = songService.getAllPlaylists(ownerId, principal.name)
@@ -33,13 +33,13 @@ class PlaylistController
         value = ["/{id}"],
         produces = [MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE]
     )
-    fun getSongList(
+    fun getPlaylist(
         @PathVariable id: @Positive Long,
         principal: Principal
-    ): Playlist = songService.getSongList(id, principal.name)
+    ): Playlist = songService.getPlaylist(id, principal.name)
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun createSong(
+    fun createPlaylist(
         @RequestBody playlist: @Valid Playlist,
         principal: Principal,
         uriComponentsBuilder: UriComponentsBuilder
@@ -50,9 +50,19 @@ class PlaylistController
         return ResponseEntity.created(location).build<Any>()
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping(value = ["/{id}"], consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updatePlaylist(
+        @PathVariable id: @Positive Long,
+        @RequestBody playlist: @Valid Playlist,
+        principal: Principal
+    ) {
+        songService.updatePlaylist(id, playlist, principal.name)
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteSongList(
+    fun deletePlaylist(
         @PathVariable id: @Positive Long,
         principal: Principal
     ) = songService.deletePlaylist(id, principal.name)

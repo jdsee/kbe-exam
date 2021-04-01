@@ -39,10 +39,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
-
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

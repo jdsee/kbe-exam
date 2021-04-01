@@ -3,6 +3,7 @@ package htw.ai.kbe.authservice.security
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpHeaders
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import java.time.Duration
 import javax.ws.rs.HttpMethod.POST
 
 
@@ -36,9 +38,16 @@ class SecurityConfig(
     fun jwtAuthenticationFailureHandler() = JwtAuthenticationFailureHandler()
 
     @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource? {
+    fun corsConfigurationSource(): CorsConfigurationSource {
         val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", CorsConfiguration().applyPermitDefaultValues())
+        val config = CorsConfiguration()
+        config.addAllowedOriginPattern("*")
+        config.addAllowedMethod("*")
+        config.addAllowedHeader("*")
+        config.setMaxAge(Duration.ofHours(24))
+        config.exposedHeaders = listOf(HttpHeaders.AUTHORIZATION, HttpHeaders.LOCATION)
+        config.applyPermitDefaultValues()
+        source.registerCorsConfiguration("/**", config)
         return source
     }
 

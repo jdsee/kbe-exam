@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @RequestMapping("/mail")
 interface SimpleMailSenderController {
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     fun sendMail(@RequestBody request: SimpleMailRequest);
 }
 
