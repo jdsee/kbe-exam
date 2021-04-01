@@ -1,4 +1,4 @@
-package htw.ai.kbe.songservice.adapter
+package htw.ai.kbe.songservice.adapter.api
 
 import com.google.common.base.Charsets
 import htw.ai.kbe.songservice.domain.model.Playlist
@@ -7,7 +7,6 @@ import htw.ai.kbe.songservice.domain.model.Song
 import htw.ai.kbe.songservice.domain.model.SongRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
